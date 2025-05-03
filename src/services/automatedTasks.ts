@@ -1,5 +1,6 @@
 import prisma from '../config/prisma';
 import { sendEmail } from '../utils/email';
+import { UserBookType, UserBookStatus } from '../types/enums';
 
 const BORROW_DURATION_DAYS = 3;
 
@@ -10,14 +11,15 @@ export async function checkAndSendReturnReminders() {
 
     const overdueBorrows = await prisma.userBook.findMany({
       where: {
-        type: 'borrowed',
-        status: 'active',
+        type: UserBookType.BORROWED,
+        status: UserBookStatus.ACTIVE,
         createdAt: {
           lte: threeDaysAgo,
         },
       },
       include: {
         book: true,
+        user: true,
       },
     });
 

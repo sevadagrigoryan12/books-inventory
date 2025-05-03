@@ -3,7 +3,7 @@ import { Joi } from 'express-validation';
 export default {
   search: {
     query: Joi.object({
-      query: Joi.string().optional(),
+      title: Joi.string().optional(),
       author: Joi.string().optional(),
       genre: Joi.string().optional(),
       page: Joi.number().integer().min(1).default(1),
@@ -20,7 +20,7 @@ export default {
       id: Joi.number().integer().required(),
     }),
     query: Joi.object({
-      actionType: Joi.string().valid('borrow', 'return', 'buy', 'restock').optional(),
+      actionType: Joi.string().valid('BORROW', 'RETURN', 'BUY', 'RESTOCK').optional(),
       userId: Joi.string().email().optional(),
       page: Joi.number().integer().min(1).default(1),
       limit: Joi.number().integer().min(1).max(100).default(10),
@@ -49,5 +49,8 @@ export default {
     headers: Joi.object({
       'user-email': Joi.string().email().required(),
     }).unknown(),
+    body: Joi.object({
+      quantity: Joi.number().integer().min(1).max(2).default(1),
+    }),
   },
 }; 

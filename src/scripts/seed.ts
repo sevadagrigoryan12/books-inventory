@@ -5,8 +5,8 @@ import path from 'path';
 const prisma = new PrismaClient();
 
 interface BookData {
-  authorName: string;
-  bookTitle: string;
+  authors: string[];
+  title: string;
   genres: string[];
   sellPrice: number;
   borrowPrice: number;
@@ -21,12 +21,27 @@ async function seed() {
       fs.readFileSync(path.join(__dirname, '../../books.json'), 'utf-8')
     ) as BookData[];
 
+    const testUser = await prisma.user.upsert({
+      where: { email: 'test@example.com' },
+      update: {},
+      create: {
+        id: 'test-user-id',
+        email: 'test@example.com',
+        name: 'Test User',
+      },
+    });
+
     // Create wallet if not exists
     const wallet = await prisma.wallet.findFirst();
     if (!wallet) {
       await prisma.wallet.create({
         data: {
           balance: 100.00,
+          user: {
+            connect: {
+              id: testUser.id,
+            },
+          },
         },
       });
     }
@@ -35,8 +50,8 @@ async function seed() {
     for (const bookData of booksData) {
       await prisma.book.create({
         data: {
-          authorName: bookData.authorName,
-          bookTitle: bookData.bookTitle,
+          authors: bookData.authors,
+          title: bookData.title,
           genres: bookData.genres,
           sellPrice: bookData.sellPrice,
           borrowPrice: bookData.borrowPrice,

@@ -5,14 +5,8 @@ services:
     build: .
     ports:
       - "3000:3000"
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/kyra_books
-      - SMTP_HOST=smtp.example.com
-      - SMTP_PORT=587
-      - SMTP_SECURE=false
-      - SMTP_USER=your-email@example.com
-      - SMTP_PASS=your-password
-      - SMTP_FROM=noreply@example.com
+    env_file:
+      - .env
     depends_on:
       - db
 

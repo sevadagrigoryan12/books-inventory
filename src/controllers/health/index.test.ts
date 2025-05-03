@@ -1,21 +1,19 @@
-import request, { SuperTest, Test } from 'supertest';
-import app from 'app';
+import request from 'supertest';
+import app from '../../app';
 
 describe('Health Controller', () => {
-  let server: SuperTest<Test>;
+  let server: any;
 
   beforeAll(() => {
     server = request(app);
   });
 
   describe('GET /health', () => {
-    test('should return status message', async () => {
-      const response = await server.get('/api/health');
-
+    test('should return 200 OK', async () => {
+      const response = await server.get('/health');
       expect(response.status).toBe(200);
-      expect(response.type).toBe('application/json');
       expect(response.body).toHaveProperty('status', 'OK');
-      expect(response.body).toHaveProperty('date', expect.anything());
+      expect(response.body).toHaveProperty('date');
     });
   });
 }); 

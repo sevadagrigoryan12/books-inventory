@@ -28,7 +28,7 @@ npm install
 
 3. Set up environment variables:
 ```bash
-cp .env.example .env
+cp .env.local .env
 ```
 Edit the `.env` file with your configuration:
 ```env
@@ -102,4 +102,35 @@ docker build -t kyra-books-inventory .
 2. Run the container:
 ```bash
 docker run -p 3000:3000 kyra-books-inventory
+```
+
+### Docker Compose
+
+The application can be run using Docker Compose for development:
+
+1. Create a `.env` file in the root directory with your configuration (see Installation section above)
+
+2. Start the services:
+```bash
+docker-compose up -d
+```
+
+This will start:
+- PostgreSQL database
+- Node.js application
+- Prisma Studio (available at http://localhost:5555)
+
+3. Initialize the database:
+```bash
+docker-compose exec app npx prisma migrate dev
+```
+
+4. Seed the database:
+```bash
+docker-compose exec app npm run seed
+```
+
+To stop the services:
+```bash
+docker-compose down
 ```

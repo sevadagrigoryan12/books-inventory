@@ -13,6 +13,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum BookActionType {
+  BORROW
+  RETURN
+  BUY
+  RESTOCK
+  RESTOCK_COMPLETED
+}
+
+enum UserBookType {
+  BORROWED
+  BOUGHT
+}
+
+enum UserBookStatus {
+  ACTIVE
+  RETURNED
+}
+
+enum WalletMovementType {
+  CREDIT
+  DEBIT
+}
+
+model User {
+  id         String     @id
+  email      String     @unique
+  name       String?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  actions    BookAction[]
+  userBooks  UserBook[]
+  wallet     Wallet?
+}
+
 model Book {
   id          Int      @id @default(autoincrement())
   authors     String[]
@@ -29,17 +63,20 @@ model Book {
 }
 
 model BookAction {
-  id         Int      @id @default(autoincrement())
+  id         Int            @id @default(autoincrement())
   bookId     Int
   userId     String
-  actionType String
-  quantity   Int      @default(1)
-  createdAt  DateTime @default(now())
-  book       Book     @relation(fields: [bookId], references: [id])
+  user       User           @relation(fields: [userId], references: [id])
+  actionType BookActionType
+  quantity   Int            @default(1)
+  createdAt  DateTime       @default(now())
+  book       Book           @relation(fields: [bookId], references: [id])
 }
 
 model Wallet {
   id        Int      @id @default(autoincrement())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
   balance   Float    @default(100.00)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -47,22 +84,23 @@ model Wallet {
 }
 
 model WalletMovement {
-  id          Int      @id @default(autoincrement())
+  id          Int               @id @default(autoincrement())
   walletId    Int
   amount      Float
-  type        String
+  type        WalletMovementType
   description String
-  createdAt   DateTime @default(now())
-  wallet      Wallet   @relation(fields: [walletId], references: [id])
+  createdAt   DateTime          @default(now())
+  wallet      Wallet            @relation(fields: [walletId], references: [id])
 }
 
 model UserBook {
-  id        Int      @id @default(autoincrement())
+  id        Int           @id @default(autoincrement())
   userId    String
+  user      User          @relation(fields: [userId], references: [id])
   bookId    Int
-  type      String
-  status    String   @default("active")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  book      Book     @relation(fields: [bookId], references: [id])
+  type      UserBookType
+  status    UserBookStatus @default(ACTIVE)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  book      Book          @relation(fields: [bookId], references: [id])
 }

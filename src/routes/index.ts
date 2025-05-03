@@ -1,16 +1,13 @@
-import { Router } from 'express';
-
-import api from './api';
+import express from 'express';
+import apiRouter from './api';
+import { healthController } from '../controllers/health';
+import { notFound } from '../controllers/notfound';
 import config from '../config/environment/service';
 
-import { notFoundController } from '../controllers/notfound';
+const router = express.Router();
 
-const router = Router();
-
-// API routes
-router.use(config.baseApiUrl, api);
-
-// Not found routes
-router.use('*', notFoundController);
+router.get('/health', healthController);
+router.use(config.baseApiUrl, apiRouter);
+router.use('*', notFound);
 
 export default router;

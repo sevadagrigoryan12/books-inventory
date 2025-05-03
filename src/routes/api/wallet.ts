@@ -6,7 +6,7 @@ import walletParamValidation from '../../config/params/wallet';
 const router = Router();
 
 /**
- * @api {get} /wallet Get Wallet Balance
+ * @api {get} /wallets/:userId Get Wallet Balance
  * @apiVersion 0.0.0
  * @apiName GetWalletBalance
  * @apiDescription Get the current wallet balance
@@ -15,16 +15,36 @@ const router = Router();
  * @apiSuccess {Object} wallet Wallet information
  * @apiSuccess {Number} wallet.balance Current balance
  */
-router.get('/', walletController.getWalletBalance);
+router.get('/:userId', walletController.getWalletBalance);
 
 /**
- * @api {get} /wallet/movements Get Wallet Movements
+ * @api {post} /wallets/:userId/movements Add Wallet Movement
+ * @apiVersion 0.0.0
+ * @apiName AddWalletMovement
+ * @apiDescription Add a new wallet movement
+ * @apiGroup Wallet
+ *
+ * @apiBody {Number} amount Movement amount
+ * @apiBody {String} type Movement type (CREDIT, DEBIT)
+ * @apiBody {String} description Movement description
+ *
+ * @apiSuccess {Object} movement Created movement
+ * @apiSuccess {Number} movement.id Movement ID
+ * @apiSuccess {Number} movement.amount Movement amount
+ * @apiSuccess {String} movement.type Movement type
+ * @apiSuccess {String} movement.description Movement description
+ * @apiSuccess {Date} movement.createdAt Movement date
+ */
+router.post('/:userId/movements', validate(walletParamValidation.addMovement), walletController.addWalletMovement);
+
+/**
+ * @api {get} /wallets/:userId/movements Get Wallet Movements
  * @apiVersion 0.0.0
  * @apiName GetWalletMovements
  * @apiDescription Get the wallet movement history
  * @apiGroup Wallet
  *
- * @apiQuery {String} [type] Filter by movement type (credit, debit)
+ * @apiQuery {String} [type] Filter by movement type (CREDIT, DEBIT)
  * @apiQuery {Number} [page=1] Page number
  * @apiQuery {Number} [limit=10] Items per page
  *
@@ -35,6 +55,6 @@ router.get('/', walletController.getWalletBalance);
  * @apiSuccess {String} movements.description Movement description
  * @apiSuccess {Date} movements.createdAt Movement date
  */
-router.get('/movements', validate(walletParamValidation.getMovements), walletController.getMovements);
+router.get('/:userId/movements', validate(walletParamValidation.getMovements), walletController.getMovements);
 
 export default router; 

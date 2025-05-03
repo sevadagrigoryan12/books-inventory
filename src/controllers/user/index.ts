@@ -1,16 +1,26 @@
 import { Request, Response } from 'express';
 import prisma from '../../config/prisma';
+import { $Enums } from '@prisma/client';
 
-export const getUserBooks = async (req: Request, res: Response) => {
+export const getUserBooks = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { email } = req.params;
+
+    const user = await prisma.user.findFirst({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
     const { type, status, page = 1, limit = 10 } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
 
     const where = {
-      userId: email,
-      type: type as string,
-      status: status as string,
+      userId: user.id,
+      ...(type && { type: type as $Enums.UserBookType }),
+      ...(status && { status: status as $Enums.UserBookStatus }),
     };
 
     const [userBooks, total] = await Promise.all([
@@ -26,8 +36,8 @@ export const getUserBooks = async (req: Request, res: Response) => {
       prisma.userBook.count({ where }),
     ]);
 
-    res.json({
-      books: userBooks.map((ub) => ({
+    return res.json({
+      userBooks: userBooks.map((ub) => ({
         id: ub.id,
         type: ub.type,
         status: ub.status,
@@ -46,6 +56,6 @@ export const getUserBooks = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }; 

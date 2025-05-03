@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
-export function healthController(_req: Request, res: Response) {
+export const healthController = (_req: Request, res: Response): Response => {
   return res.json({
-    status: 'ok',
-    date: new Date(),
+    status: 'OK',
+    date: new Date().toISOString()
   });
-}
+};

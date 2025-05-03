@@ -1,17 +1,20 @@
 import { Request, Response } from 'express';
 import prisma from '../../config/prisma';
 import { sendEmail } from '../../utils/email';
-import { WalletMovementType } from '../../types/enums';
+import { $Enums } from '@prisma/client';
 
-export const getWalletBalance = async (_req: Request, res: Response): Promise<Response> => {
+export const getWalletBalance = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const wallet = await prisma.wallet.findFirst();
+    const { userId } = req.params;
+    const wallet = await prisma.wallet.findFirst({
+      where: { userId }
+    });
 
     if (!wallet) {
       return res.status(404).json({ error: 'Wallet not found' });
     }
 
-    return res.json({ balance: wallet.balance });
+    return res.json({ wallet });
   } catch (error) {
     return res.status(500).json({ error: 'Internal server error' });
   }
@@ -19,8 +22,8 @@ export const getWalletBalance = async (_req: Request, res: Response): Promise<Re
 
 export const addWalletMovement = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { amount, type } = req.body;
-    const userEmail = req.headers['user-email'] as string;
+    const { userId } = req.params;
+    const { amount, type, description } = req.body;
 
     if (!amount || !type) {
       return res.status(400).json({ error: 'Amount and type are required' });
@@ -30,17 +33,20 @@ export const addWalletMovement = async (req: Request, res: Response): Promise<Re
       return res.status(400).json({ error: 'Amount must be greater than 0' });
     }
 
-    if (!Object.values(WalletMovementType).includes(type)) {
+    if (!Object.values($Enums.WalletMovementType).includes(type)) {
       return res.status(400).json({ error: 'Invalid movement type' });
     }
 
-    const result = await prisma.$transaction(async (tx) => {
-      const wallet = await tx.wallet.findFirst();
-      if (!wallet) {
-        throw new Error('Wallet not found');
-      }
+    const wallet = await prisma.wallet.findFirst({
+      where: { userId }
+    });
 
-      const newBalance = type === WalletMovementType.CREDIT ? wallet.balance + amount : wallet.balance - amount;
+    if (!wallet) {
+      return res.status(404).json({ error: 'Wallet not found' });
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      const newBalance = type === $Enums.WalletMovementType.CREDIT ? wallet.balance + amount : wallet.balance - amount;
       if (newBalance < 0) {
         throw new Error('Insufficient funds');
       }
@@ -50,27 +56,27 @@ export const addWalletMovement = async (req: Request, res: Response): Promise<Re
         data: { balance: newBalance },
       });
 
-      await tx.walletMovement.create({
+      const movement = await tx.walletMovement.create({
         data: {
           walletId: wallet.id,
           amount,
           type,
-          description: `Movement by user ${userEmail}`,
+          description: description || `Movement by user ${userId}`,
         },
       });
 
-      return updatedWallet;
+      return { wallet: updatedWallet, movement };
     });
 
-    if (result.balance > 2000) {
+    if (result.wallet.balance > 2000) {
       await sendEmail({
         to: 'management@dummy-library.com',
         subject: 'Wallet Milestone Reached!',
-        text: `User ${userEmail} has reached a wallet balance of ${result.balance}!`,
+        text: `User ${userId} has reached a wallet balance of ${result.wallet.balance}!`,
       });
     }
 
-    return res.json({ balance: result.balance });
+    return res.json(result);
   } catch (error) {
     return res.status(500).json({ error: 'Internal server error' });
   }
@@ -78,10 +84,22 @@ export const addWalletMovement = async (req: Request, res: Response): Promise<Re
 
 export const getMovements = async (req: Request, res: Response): Promise<Response> => {
   try {
+    const { userId } = req.params;
     const { type, page = 1, limit = 10 } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
 
-    const where = type ? { type: type as string } : {};
+    const wallet = await prisma.wallet.findFirst({
+      where: { userId }
+    });
+
+    if (!wallet) {
+      return res.status(404).json({ error: 'Wallet not found' });
+    }
+
+    const where = {
+      walletId: wallet.id,
+      ...(type && { type: type as $Enums.WalletMovementType })
+    };
 
     const [movements, total] = await Promise.all([
       prisma.walletMovement.findMany({
@@ -107,14 +125,14 @@ export const getMovements = async (req: Request, res: Response): Promise<Respons
   }
 };
 
-export const updateBalance = async (amount: number, type: WalletMovementType, description: string): Promise<number> => {
+export const updateBalance = async (amount: number, type: $Enums.WalletMovementType, description: string): Promise<number> => {
   return prisma.$transaction(async (tx) => {
     const wallet = await tx.wallet.findFirst();
     if (!wallet) {
       throw new Error('Wallet not found');
     }
 
-    const newBalance = type === WalletMovementType.CREDIT ? wallet.balance + amount : wallet.balance - amount;
+    const newBalance = type === $Enums.WalletMovementType.CREDIT ? wallet.balance + amount : wallet.balance - amount;
     if (newBalance < 0) {
       throw new Error('Insufficient funds');
     }

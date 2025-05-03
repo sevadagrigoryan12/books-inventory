@@ -1,21 +1,30 @@
-import request, { SuperTest, Test } from 'supertest';
+import request from 'supertest';
+import app from '../app';
 
-import app from 'app';
-
-describe('General API Routes', () => {
-  let server: SuperTest<Test>;
+describe('Routes', () => {
+  let server: any;
 
   beforeAll(() => {
     server = request(app);
   });
 
-  describe('GET /does/not/exist', () => {
-    test('should throw an error', async () => {
-      const response = await server.get('/does/not/exist');
+  describe('GET /health', () => {
+    test('should return 200 OK', async () => {
+      const response = await server.get('/health');
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('status', 'OK');
+      expect(response.body).toHaveProperty('date');
+    });
+  });
 
+  describe('GET /not-found', () => {
+    test('should return 404 Not Found', async () => {
+      const response = await server.get('/not-found');
       expect(response.status).toBe(404);
-      expect(response.type).toBe('application/json');
-      expect(response.body).toHaveProperty('message', 'Not Found');
+      expect(response.body).toEqual({
+        success: false,
+        message: 'Not Found',
+      });
     });
   });
 });

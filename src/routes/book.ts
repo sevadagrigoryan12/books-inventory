@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { searchBooks, getBookDetails, getBookActions, borrowBook, returnBook, buyBook, getUserBooks } from '../controllers/book';
-import { isAdmin } from '../middleware/auth';
+import { isAdmin } from '../middlewares/auth';
 
 const router = Router();
 

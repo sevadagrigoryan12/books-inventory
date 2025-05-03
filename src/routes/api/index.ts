@@ -9,7 +9,7 @@ const router = Router();
 
 router.use('/books', books);
 
-router.use('/wallet', wallet);
+router.use('/wallets', wallet);
 
 router.use('/users', users);
 

@@ -1,6 +1,6 @@
 {
     "info": {
-      "name": "Kyra Books Inventory API",
+      "name": "Kyra Books Inventory API Collection",
       "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -76,13 +76,13 @@
               "method": "GET",
               "header": [],
               "url": {
-                "raw": "{{base_url}}/books/1/actions?actionType=borrow&userId=user@example.com&page=1&limit=10",
+                "raw": "{{base_url}}/books/1/actions?actionType=BORROW&userId=user@example.com&page=1&limit=10",
                 "host": ["{{base_url}}"],
                 "path": ["books", "1", "actions"],
                 "query": [
                   {
                     "key": "actionType",
-                    "value": "borrow"
+                    "value": "BORROW"
                   },
                   {
                     "key": "userId",
@@ -162,9 +162,9 @@
               "method": "GET",
               "header": [],
               "url": {
-                "raw": "{{base_url}}/wallet",
+                "raw": "{{base_url}}/wallets/user@example.com",
                 "host": ["{{base_url}}"],
-                "path": ["wallet"]
+                "path": ["wallets", "user@example.com"]
               }
             }
           },
@@ -174,13 +174,13 @@
               "method": "GET",
               "header": [],
               "url": {
-                "raw": "{{base_url}}/wallet/movements?type=credit&page=1&limit=10",
+                "raw": "{{base_url}}/wallets/user@example.com/movements?type=CREDIT&page=1&limit=10",
                 "host": ["{{base_url}}"],
-                "path": ["wallet", "movements"],
+                "path": ["wallets", "user@example.com", "movements"],
                 "query": [
                   {
                     "key": "type",
-                    "value": "credit"
+                    "value": "CREDIT"
                   },
                   {
                     "key": "page",
@@ -191,6 +191,27 @@
                     "value": "10"
                   }
                 ]
+              }
+            }
+          },
+          {
+            "name": "Add Wallet Movement",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"amount\": 100,\n    \"type\": \"CREDIT\",\n    \"description\": \"Adding funds to wallet\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/wallets/user@example.com/movements",
+                "host": ["{{base_url}}"],
+                "path": ["wallets", "user@example.com", "movements"]
               }
             }
           }
@@ -205,17 +226,17 @@
               "method": "GET",
               "header": [],
               "url": {
-                "raw": "{{base_url}}/users/user@example.com/books?type=borrowed&status=active&page=1&limit=10",
+                "raw": "{{base_url}}/users/user@example.com/books?type=BORROWED&status=ACTIVE&page=1&limit=10",
                 "host": ["{{base_url}}"],
                 "path": ["users", "user@example.com", "books"],
                 "query": [
                   {
                     "key": "type",
-                    "value": "borrowed"
+                    "value": "BORROWED"
                   },
                   {
                     "key": "status",
-                    "value": "active"
+                    "value": "ACTIVE"
                   },
                   {
                     "key": "page",

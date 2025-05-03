@@ -1,22 +1,22 @@
 export enum BookActionType {
-  BORROW = 'borrow',
-  RETURN = 'return',
-  BUY = 'buy',
-  RESTOCK = 'restock',
-  RESTOCK_COMPLETED = 'restock_completed'
+  BORROW = 'BORROW',
+  RETURN = 'RETURN',
+  BUY = 'BUY',
+  RESTOCK = 'RESTOCK',
+  RESTOCK_COMPLETED = 'RESTOCK_COMPLETED'
 }
 
 export enum UserBookType {
-  BORROWED = 'borrowed',
-  BOUGHT = 'bought'
+  BORROWED = 'BORROWED',
+  BOUGHT = 'BOUGHT'
 }
 
 export enum UserBookStatus {
-  ACTIVE = 'active',
-  RETURNED = 'returned'
+  ACTIVE = 'ACTIVE',
+  RETURNED = 'RETURNED'
 }
 
 export enum WalletMovementType {
-  CREDIT = 'credit',
-  DEBIT = 'debit'
+  CREDIT = 'CREDIT',
+  DEBIT = 'DEBIT'
 } 

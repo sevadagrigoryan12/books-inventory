@@ -20,7 +20,7 @@ RUN npm ci --only=production
 
 COPY --from=builder /app/dist ./dist
 
-COPY .env ./
+ENV NODE_ENV=production
 
 EXPOSE 3000
 

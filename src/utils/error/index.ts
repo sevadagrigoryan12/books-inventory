@@ -1,46 +1,39 @@
-import { Request, Response, NextFunction } from 'express';
-import { createErrorResponse } from '../response';
-
 export class AppError extends Error {
-  constructor(
-    public statusCode: number,
-    public message: string,
-    public error?: any
-  ) {
+  statusCode: number;
+  isOperational: boolean;
+
+  constructor(statusCode: number, message: string, error?: any) {
     super(message);
+    this.statusCode = statusCode;
+    this.isOperational = true;
     this.name = this.constructor.name;
-    Error.captureStackTrace(this, this.constructor);
+    if (error) {
+      this.stack = error.stack;
+    }
+    Object.setPrototypeOf(this, AppError.prototype);
   }
 }
 
-export const errorHandler = (
-  err: Error | AppError,
-  req: Request,
-  res: Response,
-  _next: NextFunction
-) => {
-  console.error('Error:', {
-    message: err.message,
-    stack: err.stack,
-    timestamp: new Date().toISOString(),
-    path: req.path,
-    method: req.method,
-    body: req.body,
-    query: req.query,
-    params: req.params,
-  });
+export class ValidationError extends AppError {
+  details: any;
 
-  if (err instanceof AppError) {
-    return createErrorResponse(req, res, err.statusCode, err.message, err.error);
+  constructor(message: string, details?: any) {
+    super(400, message);
+    this.details = details;
+    Object.setPrototypeOf(this, ValidationError.prototype);
   }
+}
 
-  return createErrorResponse(req, res, 500, 'Internal Server Error', err);
-};
+export class NotFoundError extends AppError {
+  constructor(resource: string) {
+    super(404, `${resource} not found`);
+    Object.setPrototypeOf(this, NotFoundError.prototype);
+  }
+}
 
-export const notFoundHandler = (req: Request, res: Response) => {
-  return createErrorResponse(req, res, 404, 'Resource not found');
-};
-
-export const validationErrorHandler = (err: any, req: Request, res: Response) => {
-  return createErrorResponse(req, res, 400, 'Validation Error', err.details);
-}; 
+export class BusinessError extends AppError {
+  constructor(message: string) {
+    super(422, message);
+    Object.setPrototypeOf(this, BusinessError.prototype);
+  }
+} 
