@@ -46,9 +46,20 @@ SMTP_FROM="noreply@example.com"
 npx prisma migrate dev
 ```
 
-5. Seed the database with initial books:
+5. Seed the database with test data:
 ```bash
 npm run seed
+```
+
+The seed script (`src/scripts/seed.ts`) will create:
+- A test user with ID 'test-user-id' and email 'user@example.com'
+- A wallet for the test user with 100.00 balance
+- A test book
+- Additional books from books.json (if available)
+
+You can also reset the database and reseed it using:
+```bash
+npx prisma migrate reset
 ```
 
 ## Running the Application
