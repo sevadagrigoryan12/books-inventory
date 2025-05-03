@@ -251,53 +251,6 @@
             }
           }
         ]
-      },
-      {
-        "name": "URL Shortener",
-        "item": [
-          {
-            "name": "Encode URL",
-            "request": {
-              "method": "POST",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": {
-                "mode": "raw",
-                "raw": "{\n    \"originalUrl\": \"https://example.com/long-url\"\n}"
-              },
-              "url": {
-                "raw": "{{base_url}}/encode",
-                "host": ["{{base_url}}"],
-                "path": ["encode"]
-              }
-            }
-          },
-          {
-            "name": "Decode URL",
-            "request": {
-              "method": "POST",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": {
-                "mode": "raw",
-                "raw": "{\n    \"urlKey\": \"abc123\"\n}"
-              },
-              "url": {
-                "raw": "{{base_url}}/decode",
-                "host": ["{{base_url}}"],
-                "path": ["decode"]
-              }
-            }
-          }
-        ]
       }
     ],
     "variable": [
