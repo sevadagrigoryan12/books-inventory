@@ -1,0 +1,288 @@
+{
+    "info": {
+      "name": "Kyra Books Inventory API",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Health",
+        "item": [
+          {
+            "name": "Get Health Status",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/health",
+                "host": ["{{base_url}}"],
+                "path": ["health"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Books",
+        "item": [
+          {
+            "name": "Search Books",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/books?query=harry&author=rowling&genre=fantasy&page=1&limit=10",
+                "host": ["{{base_url}}"],
+                "path": ["books"],
+                "query": [
+                  {
+                    "key": "query",
+                    "value": "harry"
+                  },
+                  {
+                    "key": "author",
+                    "value": "rowling"
+                  },
+                  {
+                    "key": "genre",
+                    "value": "fantasy"
+                  },
+                  {
+                    "key": "page",
+                    "value": "1"
+                  },
+                  {
+                    "key": "limit",
+                    "value": "10"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Get Book Details",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/books/1",
+                "host": ["{{base_url}}"],
+                "path": ["books", "1"]
+              }
+            }
+          },
+          {
+            "name": "Get Book Actions",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/books/1/actions?actionType=borrow&userId=user@example.com&page=1&limit=10",
+                "host": ["{{base_url}}"],
+                "path": ["books", "1", "actions"],
+                "query": [
+                  {
+                    "key": "actionType",
+                    "value": "borrow"
+                  },
+                  {
+                    "key": "userId",
+                    "value": "user@example.com"
+                  },
+                  {
+                    "key": "page",
+                    "value": "1"
+                  },
+                  {
+                    "key": "limit",
+                    "value": "10"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Borrow Book",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "user-email",
+                  "value": "user@example.com"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/books/1/borrow",
+                "host": ["{{base_url}}"],
+                "path": ["books", "1", "borrow"]
+              }
+            }
+          },
+          {
+            "name": "Return Book",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "user-email",
+                  "value": "user@example.com"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/books/1/return",
+                "host": ["{{base_url}}"],
+                "path": ["books", "1", "return"]
+              }
+            }
+          },
+          {
+            "name": "Buy Book",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "user-email",
+                  "value": "user@example.com"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/books/1/buy",
+                "host": ["{{base_url}}"],
+                "path": ["books", "1", "buy"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Wallet",
+        "item": [
+          {
+            "name": "Get Wallet Balance",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/wallet",
+                "host": ["{{base_url}}"],
+                "path": ["wallet"]
+              }
+            }
+          },
+          {
+            "name": "Get Wallet Movements",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/wallet/movements?type=credit&page=1&limit=10",
+                "host": ["{{base_url}}"],
+                "path": ["wallet", "movements"],
+                "query": [
+                  {
+                    "key": "type",
+                    "value": "credit"
+                  },
+                  {
+                    "key": "page",
+                    "value": "1"
+                  },
+                  {
+                    "key": "limit",
+                    "value": "10"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Users",
+        "item": [
+          {
+            "name": "Get User Books",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/users/user@example.com/books?type=borrowed&status=active&page=1&limit=10",
+                "host": ["{{base_url}}"],
+                "path": ["users", "user@example.com", "books"],
+                "query": [
+                  {
+                    "key": "type",
+                    "value": "borrowed"
+                  },
+                  {
+                    "key": "status",
+                    "value": "active"
+                  },
+                  {
+                    "key": "page",
+                    "value": "1"
+                  },
+                  {
+                    "key": "limit",
+                    "value": "10"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "URL Shortener",
+        "item": [
+          {
+            "name": "Encode URL",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"originalUrl\": \"https://example.com/long-url\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/encode",
+                "host": ["{{base_url}}"],
+                "path": ["encode"]
+              }
+            }
+          },
+          {
+            "name": "Decode URL",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"urlKey\": \"abc123\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/decode",
+                "host": ["{{base_url}}"],
+                "path": ["decode"]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "base_url",
+        "value": "http://localhost:3000/api"
+      }
+    ]
+  }

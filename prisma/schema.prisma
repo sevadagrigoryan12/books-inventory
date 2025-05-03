@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Book {
+  id          Int      @id @default(autoincrement())
+  authors     String[]
+  title       String
+  genres      String[]
+  sellPrice   Float
+  borrowPrice Float
+  stockPrice  Float
+  copies      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  actions     BookAction[]
+  userBooks   UserBook[]
+}
+
+model BookAction {
+  id         Int      @id @default(autoincrement())
+  bookId     Int
+  userId     String
+  actionType String
+  quantity   Int      @default(1)
+  createdAt  DateTime @default(now())
+  book       Book     @relation(fields: [bookId], references: [id])
+}
+
+model Wallet {
+  id        Int      @id @default(autoincrement())
+  balance   Float    @default(100.00)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  movements WalletMovement[]
+}
+
+model WalletMovement {
+  id          Int      @id @default(autoincrement())
+  walletId    Int
+  amount      Float
+  type        String
+  description String
+  createdAt   DateTime @default(now())
+  wallet      Wallet   @relation(fields: [walletId], references: [id])
+}
+
+model UserBook {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  bookId    Int
+  type      String
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  book      Book     @relation(fields: [bookId], references: [id])
+}
