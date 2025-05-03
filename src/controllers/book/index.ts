@@ -149,18 +149,18 @@ export const getBookActions = async (req: Request, res: Response): Promise<Respo
 export const borrowBook = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { id } = req.params;
-    const userEmail = req.headers['user-email'] as string;
+    const userId = req.headers['user-id'] as string;
 
-    if (!userEmail) {
-      throw new ValidationError('User email is required', { userEmail: 'User email is required' });
+    if (!userId) {
+      throw new ValidationError('User ID is required', { userId: 'User ID is required' });
     }
 
     const [book, user, userBorrowedBooks] = await Promise.all([
       prisma.book.findUnique({ where: { id: Number(id) } }),
-      prisma.user.findFirst({ where: { email: userEmail } }),
+      prisma.user.findUnique({ where: { id: userId } }),
       prisma.userBook.findMany({
         where: {
-          user: { email: userEmail },
+          userId: userId,
           type: UserBookType.BORROWED,
           status: UserBookStatus.ACTIVE,
         },
@@ -189,48 +189,53 @@ export const borrowBook = async (req: Request, res: Response): Promise<Response>
     }
 
     await prisma.$transaction(async (tx: TransactionClient) => {
-      try {
-        await tx.book.update({
-          where: { id: book.id },
-          data: { copies: { decrement: 1 } },
-        });
+      await tx.book.update({
+        where: { id: book.id },
+        data: { copies: { decrement: 1 } },
+      });
 
-        await tx.userBook.create({
-          data: {
-            userId: user.id,
-            bookId: book.id,
-            type: UserBookType.BORROWED,
-            status: UserBookStatus.ACTIVE,
-          },
-        });
+      await tx.userBook.create({
+        data: {
+          userId: userId,
+          bookId: book.id,
+          type: UserBookType.BORROWED,
+          status: UserBookStatus.ACTIVE,
+        },
+      });
 
-        await tx.bookAction.create({
-          data: {
-            book: { connect: { id: book.id } },
-            user: { connect: { id: user.id } },
-            actionType: BookActionType.BORROW,
-          },
-        });
+      await tx.bookAction.create({
+        data: {
+          book: { connect: { id: book.id } },
+          user: { connect: { id: userId } },
+          actionType: BookActionType.BORROW,
+        },
+      });
 
-        if (book.copies === 1) {
-          await sendEmail({
-            to: 'management@library.com',
-            subject: 'Low Stock Alert',
-            text: `Book "${book.title}" by ${book.authors.join(', ')} has only 1 copy left. It will be automatically restocked in 1 hour.`,
-          });
-          scheduleBookRestock(book.id, 5); // Restock with 5 copies after 1 hour
-        }
-      } catch (error) {
-        throw new AppError(500, 'Failed to process book borrowing transaction', error);
+      if (book.copies === 1) {
+        await sendEmail({
+          to: 'management@library.com',
+          subject: 'Low Stock Alert',
+          text: `Book "${book.title}" by ${book.authors.join(', ')} has only 1 copy left. It will be automatically restocked in 1 hour.`,
+        });
+        scheduleBookRestock(book.id, 5); // Restock with 5 copies after 1 hour
       }
     });
 
     return res.json({ success: true, message: 'Book borrowed successfully' });
   } catch (error) {
     if (error instanceof AppError) {
-      throw error;
+      return res.status(error.statusCode).json({
+        success: false,
+        type: error.name,
+        message: error.message,
+        ...(error instanceof ValidationError && { errors: error.details }),
+      });
     }
-    throw new AppError(500, 'Failed to borrow book', error);
+    return res.status(500).json({
+      success: false,
+      type: 'InternalServerError',
+      message: 'Failed to borrow book',
+    });
   }
 };
 

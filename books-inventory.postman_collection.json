@@ -76,7 +76,7 @@
               "method": "GET",
               "header": [],
               "url": {
-                "raw": "{{base_url}}/books/1/actions?actionType=BORROW&userId=user@example.com&page=1&limit=10",
+                "raw": "{{base_url}}/books/1/actions?actionType=BORROW&userId=test-user-id&page=1&limit=10",
                 "host": ["{{base_url}}"],
                 "path": ["books", "1", "actions"],
                 "query": [
@@ -86,7 +86,7 @@
                   },
                   {
                     "key": "userId",
-                    "value": "user@example.com"
+                    "value": "test-user-id"
                   },
                   {
                     "key": "page",
@@ -106,8 +106,8 @@
               "method": "POST",
               "header": [
                 {
-                  "key": "user-email",
-                  "value": "user@example.com"
+                  "key": "user-id",
+                  "value": "test-user-id"
                 }
               ],
               "url": {
@@ -123,8 +123,8 @@
               "method": "POST",
               "header": [
                 {
-                  "key": "user-email",
-                  "value": "user@example.com"
+                  "key": "user-id",
+                  "value": "test-user-id"
                 }
               ],
               "url": {
@@ -140,8 +140,8 @@
               "method": "POST",
               "header": [
                 {
-                  "key": "user-email",
-                  "value": "user@example.com"
+                  "key": "user-id",
+                  "value": "test-user-id"
                 }
               ],
               "url": {
@@ -162,9 +162,9 @@
               "method": "GET",
               "header": [],
               "url": {
-                "raw": "{{base_url}}/wallets/user@example.com",
+                "raw": "{{base_url}}/wallets/test-user-id",
                 "host": ["{{base_url}}"],
-                "path": ["wallets", "user@example.com"]
+                "path": ["wallets", "test-user-id"]
               }
             }
           },
@@ -174,9 +174,9 @@
               "method": "GET",
               "header": [],
               "url": {
-                "raw": "{{base_url}}/wallets/user@example.com/movements?type=CREDIT&page=1&limit=10",
+                "raw": "{{base_url}}/wallets/test-user-id/movements?type=CREDIT&page=1&limit=10",
                 "host": ["{{base_url}}"],
-                "path": ["wallets", "user@example.com", "movements"],
+                "path": ["wallets", "test-user-id", "movements"],
                 "query": [
                   {
                     "key": "type",
@@ -209,9 +209,9 @@
                 "raw": "{\n    \"amount\": 100,\n    \"type\": \"CREDIT\",\n    \"description\": \"Adding funds to wallet\"\n}"
               },
               "url": {
-                "raw": "{{base_url}}/wallets/user@example.com/movements",
+                "raw": "{{base_url}}/wallets/test-user-id/movements",
                 "host": ["{{base_url}}"],
-                "path": ["wallets", "user@example.com", "movements"]
+                "path": ["wallets", "test-user-id", "movements"]
               }
             }
           }
@@ -226,9 +226,9 @@
               "method": "GET",
               "header": [],
               "url": {
-                "raw": "{{base_url}}/users/user@example.com/books?type=BORROWED&status=ACTIVE&page=1&limit=10",
+                "raw": "{{base_url}}/users/test-user-id/books?type=BORROWED&status=ACTIVE&page=1&limit=10",
                 "host": ["{{base_url}}"],
-                "path": ["users", "user@example.com", "books"],
+                "path": ["users", "test-user-id", "books"],
                 "query": [
                   {
                     "key": "type",

@@ -21,7 +21,7 @@ export default {
     }),
     query: Joi.object({
       actionType: Joi.string().valid('BORROW', 'RETURN', 'BUY', 'RESTOCK').optional(),
-      userId: Joi.string().email().optional(),
+      userId: Joi.string().required(),
       page: Joi.number().integer().min(1).default(1),
       limit: Joi.number().integer().min(1).max(100).default(10),
     }),
@@ -31,7 +31,7 @@ export default {
       id: Joi.number().integer().required(),
     }),
     headers: Joi.object({
-      'user-email': Joi.string().email().required(),
+      'user-id': Joi.string().required(),
     }).unknown(),
   },
   return: {
@@ -39,7 +39,7 @@ export default {
       id: Joi.number().integer().required(),
     }),
     headers: Joi.object({
-      'user-email': Joi.string().email().required(),
+      'user-id': Joi.string().required(),
     }).unknown(),
   },
   buy: {
@@ -47,7 +47,7 @@ export default {
       id: Joi.number().integer().required(),
     }),
     headers: Joi.object({
-      'user-email': Joi.string().email().required(),
+      'user-id': Joi.string().required(),
     }).unknown(),
     body: Joi.object({
       quantity: Joi.number().integer().min(1).max(2).default(1),
