@@ -5,8 +5,21 @@ services:
     build: .
     ports:
       - "3000:3000"
-    env_file:
-      - .env
+    environment:
+      - NODE_ENV=production
+      - PROJECT_NAME=kyra-books-inventory
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - BASE_API_URL=/api
+      - LOG_LEVEL=info
+      - LOG_PATH=.
+      - LOG_TYPES=console
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/kyra_books
+      - SMTP_HOST=smtp.example.com
+      - SMTP_PORT=587
+      - SMTP_SECURE=false
+      - SMTP_USER=your-email@example.com
+      - SMTP_PASS=your-password
+      - SMTP_FROM=noreply@example.com
     depends_on:
       - db
 

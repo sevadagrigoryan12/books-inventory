@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
-import path from 'path';
 
 const prisma = new PrismaClient();
 
@@ -8,9 +7,11 @@ interface BookData {
   authors: string[];
   title: string;
   genres: string[];
-  sellPrice: number;
-  borrowPrice: number;
-  stockPrice: number;
+  prices: {
+    sell: number;
+    borrow: number;
+    stock: number;
+  };
   copies: number;
 }
 
@@ -65,22 +66,13 @@ async function seed() {
       });
     }
 
-    const testBook = await prisma.book.create({
-      data: {
-        authors: ['Test Author'],
-        title: 'Test Book',
-        genres: ['Test Genre'],
-        sellPrice: 10.00,
-        borrowPrice: 1.00,
-        stockPrice: 5.00,
-        copies: 5,
-      },
-    });
-
     try {
+      const filePath = '/app/src/scripts/books.json';
       const booksData = JSON.parse(
-        fs.readFileSync(path.join(__dirname, '../../books.json'), 'utf-8')
+        fs.readFileSync(filePath, 'utf-8')
       ) as BookData[];
+
+      console.log(`Successfully read ${booksData.length} books from file`);
 
       for (const bookData of booksData) {
         await prisma.book.create({
@@ -88,13 +80,14 @@ async function seed() {
             authors: bookData.authors,
             title: bookData.title,
             genres: bookData.genres,
-            sellPrice: bookData.sellPrice,
-            borrowPrice: bookData.borrowPrice,
-            stockPrice: bookData.stockPrice,
+            sellPrice: bookData.prices.sell,
+            borrowPrice: bookData.prices.borrow,
+            stockPrice: bookData.prices.stock,
             copies: bookData.copies,
           },
         });
       }
+      console.log('Additional books loaded from books.json');
     } catch (error) {
       console.log('No books.json file found, skipping additional books');
     }
@@ -102,7 +95,6 @@ async function seed() {
     console.log('Database seeded successfully');
     console.log('Test user created with email: user@example.com');
     console.log('Test user ID:', testUser.id);
-    console.log('Test book created with ID:', testBook.id);
   } catch (error) {
     console.error('Error seeding database:', error);
     process.exit(1);
